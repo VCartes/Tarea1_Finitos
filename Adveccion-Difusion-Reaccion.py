@@ -1,7 +1,6 @@
 from dolfin import *
 
 import sympy as sp
-import numpy as np
 
 from prettytable import PrettyTable
 import matplotlib.pyplot as plt
@@ -9,6 +8,7 @@ import matplotlib.pyplot as plt
 
 # ----- GLOBAL VARIABLES -----
 
+# Constants
 a           = 0
 b           = 1
 epsilon     = 1e-3
@@ -18,6 +18,7 @@ u0          = 0
 u1          = 0
 
 
+# Symbolic functions
 x = sp.symbols("x[0]")
 
 f = 1
@@ -26,8 +27,12 @@ p = (u1-u0)/(b-a)*(x-a) + u0
 u_ex_sp = x - (sp.exp(-(1-x)/epsilon) - sp.exp(-1/epsilon)) / (1 - sp.exp(-1/epsilon))
 
 
+# Turn symbolic functions to FEniCS expressions
 f = Expression(sp.printing.ccode(f), degree = 5)
 u_ex = Expression(sp.printing.ccode(u_ex_sp), degree = 5)
+
+
+# ----- HELPER FUNCTIONS -----
 
 
 def boundary(x):
@@ -83,7 +88,6 @@ def vf_solve(n_interv, deg):
 if __name__ == "__main__":
     degree  = 2
     NN      = [8, 16, 32, 64, 128, 256, 512]
-    # NN      = [16, 64, 256]
 
     u       = None
     hh      = list()
@@ -105,24 +109,27 @@ if __name__ == "__main__":
 
     plt.title(f"Grado: {degree} - ε: {epsilon}")
     plt.legend()
+
+    # Saving image (optional)
     # plt.savefig(f"Plots/deg {degree} - eps {epsilon}.png")
-    # plt.show()
+
+    plt.show()
 
 
     # Tables
 
-    table = PrettyTable(["h", "err_L2", "err_H1"])
-    table.border = True
+    table           = PrettyTable(["h", "err_L2", "err_H1"])
+    table.border    = True
 
     table.add_rows([["%.3f" % hh[i], "%2.2e" % L2_errs[i], "%2.2e" % H1_errs[i]] for i in range(len(hh))])
 
     print(table)
 
 
-    # Saving tables
+    # Tables for rates
 
+    # Saving table (optional)
     # save_table(f"Tables/deg {degree} - eps {epsilon}.txt", hh, L2_errs, H1_errs)
 
+    print("Listo!")
 
-    
-    print("fin")
